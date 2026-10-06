@@ -1,6 +1,6 @@
-FROM ubuntu
+FROM nginx:1.25-alpine
 EXPOSE 80
 MAINTAINER lakshmi
 LABEL this is my docker file
-RUN touch file1 file2 AWS
-WORKDIR /lakshmi/docker/data
+RUN rm -rf /usr/share/nginx/html/*
+COPY index.html /usr/share/nginx/html/
