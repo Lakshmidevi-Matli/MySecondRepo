@@ -1,1 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>simple digital clock</title>
+    <style>
+        /* minimal, clean styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background: linear-gradient(145deg, #0b1a2e 0%, #1a2f3f 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            padding: 1rem;
+        }
+
+        .clock-card {
+            background: rgba(18, 30, 41, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 3.5rem;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 30px 45px -15px rgba(0, 0, 0, 0.7), 
+                        inset 0 1px 3px rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(120, 180, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .clock {
+            text-align: center;
+        }
+
+        /* time digits */
+        #timeDisplay {
+            font-size: clamp(3.5rem, 18vw, 7rem);
+            font-weight: 500;
+            letter-spacing: 5px;
+            color: #e3f2fd;
+            text-shadow: 0 0 20px rgba(100, 210, 255, 0.7), 0 0 8px rgba(0, 160, 255, 0.5);
+            font-variant-numeric: tabular-nums;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #fff 0%, #b3e5fc 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 18px #3a9bdc);
+            transition: 0.2s;
+        }
+
+        /* date line */
+        #dateDisplay {
+            font-size: 1.2rem;
+            margin-top: 1.2rem;
+            color: #9bb8d4;
+            letter-spacing: 2px;
+            font-weight: 300;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(150, 200, 255, 0.2);
+            padding-top: 1.2rem;
+            word-spacing: 4px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        /* subtle glow on hover */
+        .clock-card:hover {
+            border-color: rgba(100, 180, 255, 0.5);
+            box-shadow: 0 35px 50px -15px #0a1b2e, inset 0 1px 5px rgba(255, 255, 255, 0.15);
+        }
+
+        /* small footer for pure simplicity */
+        .made-by {
+            margin-top: 1.8rem;
+            font-size: 0.7rem;
+            color: #3f5f7a;
+            letter-spacing: 1px;
+            text-align: center;
+            opacity: 0.6;
+        }
+
+        /* ensure legibility on small screens */
+        @media (max-width: 400px) {
+            .clock-card {
+                padding: 2rem 1.5rem;
+                border-radius: 2rem;
+            }
+            #timeDisplay {
+                letter-spacing: 2px;
+            }
+            #dateDisplay {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-card">
+        <div class="clock">
+            <!-- time (HH:MM:SS) -->
+            <div id="timeDisplay">--:--:--</div>
+            <!-- full date: weekday, month day, year -->
+            <div id="dateDisplay">loading…</div>
+            <div class="made-by">⏱ simple clock</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // get DOM elements
+            const timeElement = document.getElementById('timeDisplay');
+            const dateElement = document.getElementById('dateDisplay');
+
+            // helper: pad single digits with leading zero
+            const pad = (num) => String(num).padStart(2, '0');
+
+            // formats time as HH:MM:SS (24-hour)
+            function formatTime(date) {
+                const hours = pad(date.getHours());
+                const minutes = pad(date.getMinutes());
+                const seconds = pad(date.getSeconds());
+                return `${hours}:${minutes}:${seconds}`;
+            }
+
+            // formats date as "WEEKDAY, MONTH DAY, YEAR"
+            function formatDate(date) {
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                return date.toLocaleDateString(undefined, options);
+            }
+
+            // update both time and date in the DOM
+            function updateClock() {
+                const now = new Date();
+                timeElement.textContent = formatTime(now);
+                dateElement.textContent = formatDate(now);
+            }
+
+            // initial call to show correct time immediately
+            updateClock();
+
+            // refresh every 1000ms (1 second)
+            // using setInterval ensures that even if second changes, the display stays in sync
+            setInterval(updateClock, 1000);
+
+            // edge case: if the tab becomes active after being idle, 
+            // the interval may drift but will self-correct on next tick.
+            // for perfect precision we could use requestAnimationFrame, 
+            // but setInterval is simple and sufficient for a clock.
+        })();
+    </script>
+</body>
+</html>
